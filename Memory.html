@@ -1,0 +1,177 @@
+<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Ropa+Sans' rel='stylesheet' type='text/css'>
+<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+
+<html>
+	<title>Memory</title>
+	<body>
+		<div id="prompt">Select the text file to begin.</div><br>
+		<input type="file" id="input"/><br>
+		<div id="numItems"></div>
+		<div id="gameWrap">
+			<div id="score"><p>0 / 0</p></div>
+			<div id="question"></div><br><br>
+			<div id="answers"></div><br>
+		</div>
+	</body>
+</html>
+
+<style>
+body, html{
+	text-align: center;
+	font-family: 'Ropa Sans', sans-serif;
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#prompt{
+	font-size: 3em;
+	margin-top: 2em;
+}
+
+#gameWrap{
+	display: inline-block;
+	width: 60%;
+}
+
+#question{
+	font-size: 2em;
+}
+
+#answers{
+	text-align: left;
+	font-size: 1.5em;
+	cursor: pointer;
+}
+
+#score{
+	visibility: hidden;
+}
+
+</style>
+
+<script>
+$(document).ready(function(){
+	var fileReady = false;
+	var cards = []; //Flashcards array
+	var score = 0;
+	var totQ = 0;
+	var curQ;
+	var curQsUsed;
+	var curAnsSlot;
+
+	function openData(event){
+		//Retrieve the only file chosen
+		var file = event.target.files[0];
+		$('#prompt').empty();
+		var filename = file.name;
+		filename = filename.substring(0,filename.length-4);
+		$('#prompt').append(filename);		
+		var reader = new FileReader();
+		reader.onload = function(e){
+			var contents = e.target.result;
+			var arr = contents.split("\n");
+			generateCards(arr);
+		}
+		reader.readAsText(file);
+		//$('#prompt').css("display", "none");
+		$('#input').css("display", "none");
+		$('#score').css("visibility", "visible");
+	}//end OpenData
+
+	function generateCards(arr){
+		while(arr.length > 0)
+			cards.push([arr.shift(), arr.shift()]);
+		$('#numItems').append(cards.length + " total items on file.");
+		playGame();
+	}//end generateCards
+
+	function playGame(){
+		fileReady = true; //Allows processing of keypresses, prevents errors
+		getQuestion();
+	}//end playGame
+
+	function getQuestion(){
+		$('#answers').empty();
+		$('#question').empty();
+		var l = cards.length;
+		var randQ = Math.floor(Math.random()*l);
+		curQ = cards[randQ];
+		$('#question').append(curQ[0]);
+		curAnsSlot = Math.floor(Math.random()*4);
+		curQsUsed = [randQ]; //Prevent duplicate answers
+		for(var i=0; i<4; ++i){
+			if(i != curAnsSlot){
+				while($.inArray(randQ, curQsUsed) > -1)
+					randQ = Math.floor(Math.random()*l);
+				curQsUsed.push(randQ);
+				$('#answers').append("<div class=\"ans\">" + (i+1) + ") " + 
+					cards[randQ][1] + "</div><br>");
+			}
+			else{
+				$('#answers').append("<div class=\"ans\">" + (i+1) + ") " + 
+					cards[curQsUsed[0]][1] + "</div><br>");
+			}
+		}//end for
+		$('.ans').click(function(){
+			var selection = ($('.ans').index(this));
+			assessChoice(selection);
+		});
+
+		totQ++;
+	}//end getQuestion
+			
+	document.onkeydown = function(event){
+		var selection = getKeyPress(event);
+		if(selection > -1)
+			if(fileReady)
+				assessChoice(selection);
+	};
+
+	function getKeyPress(event){
+		var k = event.keyCode;
+		switch(k){
+			case 49:
+			case 97:
+				return 0;
+			case 98:
+			case 50:
+				return 1;
+			case 99:
+			case 51:
+				return 2;
+			case 52:
+			case 100:
+				return 3;
+			default:
+				return -1;
+		}
+	}//end getKeyPress
+
+	function assessChoice(selection){
+		if(selection == curAnsSlot){
+			score++;
+			$('#score').empty()
+			$('#score').append("<p>" + score + " / " + totQ + "</p>");
+			getQuestion();
+		}
+		else{
+			//alert('[Correct Answer]\n ' + curQ[1]);
+			$('.ans').eq(selection).css("color", "red");
+			$('.ans').eq(curAnsSlot).css("color", "green");
+			setTimeout(function(){
+				$('#score').empty()
+				$('#score').append("<p>" + score + " / " + totQ + "</p>");
+				getQuestion();
+			}, 4000);
+		}
+	}//end assessChoice
+
+	//Add eventListener for file input
+	$('input').change(openData);
+});
+</script>
