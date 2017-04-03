@@ -1,7 +1,6 @@
 # memory
  Simple Flashcards
 <br>
-<br>
 - Create a file with odd lines as answers and even lines as definitions. For example:<br>
 <t><t>1<br>
 <t><t>The number of questions written thus far<br>
