@@ -1,8 +1,9 @@
 # memory
-Simple Flashcards
+ Simple Flashcards
 <br>
 <br>
-Create a file with odd lines as answers and even lines as definitions
+- Create a file with odd lines as answers and even lines as definitions
+
 ie.
 
 1
@@ -13,4 +14,4 @@ The number of questions written thus far
 
 Shall be the number of the counting.
 <br><br>
-Select answers by clicking or typing the corresponding number.
+- Select answers by clicking or typing the corresponding number.
