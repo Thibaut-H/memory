@@ -7,5 +7,6 @@
 <t><t>The number of questions written thus far<br>
 <t><t>3<br>
 <t><t>Shall be the number of the counting.
-<br><br>
+<br>
+- Save as text file and open in memory.html
 - Select answers by clicking or typing the corresponding number.
